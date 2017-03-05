@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mynet
+
+  redis-cli:
+    image: java:alpine
+    depends_on:
+      - redis
+    volumes:
+      - ./redis/build/libs/redis.jar:/var/app.jar:Z
+      - ./src/main/resources/conf.json:/var/conf.json
+    command: java -jar /var/app.jar -conf /var/conf.json -cluster
+    networks:
+      - mynet
+
+  stepan:
+    image: java:alpine
+    volumes:
+      - ./stepan/build/libs/stepan.jar:/var/app.jar:Z
+      - ./src/main/resources/conf.json:/var/conf.json
+    command: java -jar /var/app.jar -conf /var/conf.json -cluster
+    networks:
+      - mynet
+
+  boris:
+    image: java:alpine
+    volumes:
+      - ./boris/build/libs/boris.jar:/var/app.jar:Z
+      - ./src/main/resources/conf.json:/var/conf.json
+    command: java -jar /var/app.jar -conf /var/conf.json -cluster
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge

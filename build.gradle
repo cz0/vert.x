@@ -1,0 +1,36 @@
+allprojects {
+
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    def vertxVersion = '3.3.3'
+
+    dependencies {
+        compile "io.vertx:vertx-core:$vertxVersion"
+        compile "io.vertx:vertx-hazelcast:$vertxVersion"
+        compile "io.vertx:vertx-redis-client:$vertxVersion"
+    }
+
+    jar {
+        exclude('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA',
+                'META-INF/*.MF')
+        from {
+            configurations.compile.collect {
+                it.isDirectory() ? it : zipTree(it)
+            }
+        }
+        manifest {
+            attributes 'Main-Class': 'io.vertx.core.Launcher'
+        }
+    }
+
+    subprojects { Project subProject ->
+        jar {
+            baseName = "test-$subProject.name"
+            version = '0.0.1'
+        }
+    }
+}

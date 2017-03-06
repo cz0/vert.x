@@ -11,7 +11,7 @@ public class RedisVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        RedisClient redis = RedisClient.create(vertx, new RedisOptions());
+        RedisClient redis = RedisClient.create(vertx, new RedisOptions().setHost("redis"));
         String address = config().getString("address");
 
         LOG.info("Redis is ready to get messages on the address: " + address);

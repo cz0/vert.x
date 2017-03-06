@@ -4,7 +4,7 @@ services:
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - 6379:6379
     networks:
       - mynet
 
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./redis/build/libs/redis.jar:/var/app.jar:Z
       - ./src/main/resources/conf.json:/var/conf.json
-    command: java -jar /var/app.jar -conf /var/conf.json -cluster
+    command: java -jar /var/app.jar -conf /var/conf.json -ha
     networks:
       - mynet
 
@@ -33,6 +33,17 @@ services:
     volumes:
       - ./boris/build/libs/boris.jar:/var/app.jar:Z
       - ./src/main/resources/conf.json:/var/conf.json
+    command: java -jar /var/app.jar -conf /var/conf.json -cluster
+    networks:
+      - mynet
+
+  web:
+    image: java:alpine
+    volumes:
+      - ./web/build/libs/web.jar:/var/app.jar:Z
+      - ./src/main/resources/conf.json:/var/conf.json
+    ports:
+      - 8080:8080
     command: java -jar /var/app.jar -conf /var/conf.json -cluster
     networks:
       - mynet

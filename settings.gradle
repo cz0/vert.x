@@ -1,1 +1,1 @@
-include 'boris', 'stepan', 'redis'
+include 'boris', 'stepan', 'redis', 'web'

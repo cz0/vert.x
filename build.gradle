@@ -12,6 +12,7 @@ allprojects {
         compile "io.vertx:vertx-core:$vertxVersion"
         compile "io.vertx:vertx-hazelcast:$vertxVersion"
         compile "io.vertx:vertx-redis-client:$vertxVersion"
+        compile "io.vertx:vertx-web:$vertxVersion"
     }
 
     jar {

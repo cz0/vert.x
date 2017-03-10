@@ -23,7 +23,6 @@ public class WebVerticle extends AbstractVerticle {
 
         vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 
-        // Publish a message to the address "news-feed" every second
         vertx.setPeriodic(5000, t -> {
                     vertx.eventBus().publish("some-nice-address", "news from the web verticle!");
                 }

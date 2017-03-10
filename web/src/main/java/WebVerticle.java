@@ -1,6 +1,4 @@
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.BridgeEventType;
@@ -18,20 +16,7 @@ public class WebVerticle extends AbstractVerticle {
 
         BridgeOptions options = new BridgeOptions().addOutboundPermitted(new PermittedOptions().setAddress("some-nice-address"));
 
-        router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options, event -> {
-
-            // You can also optionally provide a handler like this which will be passed any events that occur on the bridge
-            // You can use this for monitoring or logging, or to change the raw messages in-flight.
-            // It can also be used for fine grained access control.
-
-            if (event.type() == BridgeEventType.SOCKET_CREATED) {
-                System.out.println("A socket was created");
-            }
-
-            // This signals that it's ok to process the event
-            event.complete(true);
-
-        }));
+        router.route("/eventbus/*").handler(SockJSHandler.create(vertx).bridge(options));
 
         // Serve the static resources
         router.route().handler(StaticHandler.create());

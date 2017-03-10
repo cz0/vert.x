@@ -16,6 +16,7 @@ allprojects {
     }
 
     jar {
+        version = '0.0.1'
         exclude('META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA',
                 'META-INF/*.MF')
         from {
@@ -28,10 +29,13 @@ allprojects {
         }
     }
 
+
     subprojects { Project subProject ->
         jar {
             baseName = "test-$subProject.name"
-            version = '0.0.1'
+            manifest {
+                attributes 'Main-Verticle': "${subProject.name.capitalize()}Verticle"
+            }
         }
     }
 }

@@ -4,18 +4,34 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.unit.junit.VertxUnitRunnerWithParametersFactory;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-@RunWith(VertxUnitRunner.class)
+import java.util.Arrays;
+
+@RunWith(Parameterized.class)
+@Parameterized.UseParametersRunnerFactory(VertxUnitRunnerWithParametersFactory.class)
 public class RedisTest {
-    Vertx vertx;
-    String address;
-    String host;
+    private Vertx vertx;
+    private String address;
+    private String host;
+    private final String targetCountry;
+    private RedisClient redis;
+
+    @Parameterized.Parameters
+    public static Iterable<String> targetCountries() {
+        return Arrays.asList("Czech Republic", "Russia", "Ukraine");
+    }
+
+    public RedisTest(String targetCountry) {
+        this.targetCountry = targetCountry;
+    }
 
     @Before
     public void before(TestContext context) {
@@ -28,6 +44,9 @@ public class RedisTest {
         vertx = Vertx.vertx();
 
         vertx.deployVerticle(RedisVerticle.class.getName(), options, context.asyncAssertSuccess());
+
+        redis = RedisClient.create(vertx, new RedisOptions().setHost(host));
+       // redis.flushall(context.asyncAssertSuccess());
     }
 
     @After
@@ -38,16 +57,15 @@ public class RedisTest {
     @Test
     public void talkToRedis(TestContext context) {
         vertx.eventBus().publish(address, new JsonObject()
-                .put("content", "Hello there!")
-                .put("counter", 1));
+                .put("content", "Hello, " + targetCountry)
+                .put("counter", targetCountry.length()));
 
-        RedisClient redis = RedisClient.create(vertx, new RedisOptions().setHost(host));
         Async async = context.async();
 
-        redis.hgetall("key:1", asyncResult -> {
+        redis.hgetall("key:" + targetCountry.length(), asyncResult -> {
             if (asyncResult.succeeded()) {
                 if (asyncResult.succeeded()) {
-                    context.assertEquals("Hello there!",
+                    context.assertEquals("Hello, " + targetCountry,
                             asyncResult.result().getString("content"));
                 } else {
                     System.out.println(asyncResult.cause().getMessage());

@@ -1,3 +1,4 @@
 {
-  "address": "some-nice-address"
+  "address": "some-nice-address",
+  "redis-host": "redis"
 }

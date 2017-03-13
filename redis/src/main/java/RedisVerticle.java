@@ -11,8 +11,10 @@ public class RedisVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        RedisClient redis = RedisClient.create(vertx, new RedisOptions().setHost("redis"));
         String address = config().getString("address");
+        String host = config().getString("redis-host");
+
+        RedisClient redis = RedisClient.create(vertx, new RedisOptions().setHost(host));
 
         LOG.info("Redis is ready to get messages on the address: " + address);
         vertx.eventBus().consumer(address, message -> {
@@ -20,9 +22,9 @@ public class RedisVerticle extends AbstractVerticle {
             LOG.info("Redis received message: " + messageBody);
             redis.hmset("key:" + messageBody.getInteger("counter"), messageBody, res -> {
                 if (res.succeeded()) {
-                    System.out.println("Value stored");
+                    LOG.info("Value stored");
                 } else {
-                    System.out.println(res.cause().getMessage());
+                    LOG.info(res.cause().getMessage());
                 }
             });
         });
